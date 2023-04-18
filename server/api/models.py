@@ -4,6 +4,7 @@ from django.core.validators import MaxValueValidator
 
 class Client(models.Model):
     name = models.CharField(max_length=200)
+    code = models.CharField(max_length=200, unique=True)
 
     def __str__(self):
         return self.name
@@ -11,6 +12,7 @@ class Client(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=200)
+    code = models.CharField(max_length=200, unique=True)
 
     def __str__(self):
         return self.name
@@ -29,7 +31,7 @@ class OrderForm(models.Model):
 class OrderFormLine(models.Model):
     order_form = models.ForeignKey(OrderForm, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.DecimalField(max_digits=18, decimal_places=3, null=True)
+    quantity = models.DecimalField(max_digits=18, decimal_places=3)
 
     def __str__(self):
         return f"{self.order_form.number} {self.product} {self.quantity}"
@@ -40,4 +42,4 @@ class Employee(models.Model):
     email = models.EmailField(max_length=254)
 
     def __str__(self):
-        return self.email
+        return f"{self.name} {self.email}"
