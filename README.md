@@ -28,7 +28,7 @@ Kontoritöötaja saadab igapäevaselt laotöötajale infot väljastamist vajavat
 
 ## Ülesanne
 
-Tuleks luua lahendus, mis aitaks kontoritöötajal luua saatelehti ja edastada need laotöötajale automaatselt. Lahendus koosneb frontend kasutajaliides ja backend REST API rakendus test, mis omavahel suhtlevad. Läbi kasutajaliidese saab pärida tellimuse numbri järgi tellimuse infot ning näha tellimuse andmeid (tellimuse number, kliendikood, kliendi nimi, kuupäev ja tellimuse ridasid toote kood toote nimetus tellitud kogus).
+Tuleks luua lahendus, mis aitaks kontoritöötajal luua saatelehti ja edastada need laotöötajale automaatselt. Lahendus koosneb frontend kasutajaliides ja backend REST API rakendustest, mis omavahel suhtlevad. Läbi kasutajaliidese saab pärida tellimuse numbri järgi tellimuse infot ning näha tellimuse andmeid (tellimuse number, kliendikood, kliendi nimi, kuupäev ja tellimuse ridasid toote kood toote nimetus tellitud kogus).
 
 Andmebaas tuleks ise luua ja peaks sisaldama vähemalt 3 tellimust ja igal tellimusel peab olema vähemalt 2 erinevat toodet. Tellimuse andmetest peab saama koostada saatelehe PDF fail, mis sisaldab tellimuse numbrit, selle põhjal genereeritud triipkood, kliendi koodi, kliendi nime, kuupäeva ning tellimuse ridade infot.
 
