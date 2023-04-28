@@ -1,10 +1,14 @@
 <script setup>
-defineProps({
-  msg: {
-    type: String,
-    required: true
-  }
-})
+  defineProps({
+    msg: {
+      type: String,
+      required: true
+    },
+    studentData: {
+      type: Array,
+      required: true
+    }
+  })
 </script>
 
 <template>
