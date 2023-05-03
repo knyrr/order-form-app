@@ -136,7 +136,7 @@ def get_product_by_id(request, id, format=None):
 
 
 @api_view(['GET', 'POST'])
-def get_orderForms(request, format=None):
+def get_order_forms(request, format=None):
 
     if request.method == 'GET':
         orderForms = OrderForm.objects.all()
@@ -151,7 +151,7 @@ def get_orderForms(request, format=None):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def get_orderForm_by_id(request, id, format=None):
+def get_order_form_by_id(request, id, format=None):
     try:
         orderForm = OrderForm.objects.get(pk=id)
     except OrderForm.DoesNotExist:
@@ -177,7 +177,7 @@ def get_orderForm_by_id(request, id, format=None):
 
 
 @api_view(['GET', 'POST'])
-def get_orderFormLines(request, format=None):
+def get_order_form_lines(request, format=None):
 
     if request.method == 'GET':
         orderFormLines = OrderFormLine.objects.all()
@@ -192,7 +192,7 @@ def get_orderFormLines(request, format=None):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def get_orderFormLine_by_id(request, id, format=None):
+def get_order_form_line_by_id(request, id, format=None):
     try:
         orderFormLine = OrderFormLine.objects.get(pk=id)
     except OrderFormLine.DoesNotExist:

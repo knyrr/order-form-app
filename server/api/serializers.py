@@ -5,7 +5,7 @@ from .models import Client, Employee, OrderForm, OrderFormLine, Product
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'code']
 
 
 class EmployeeSerializer(serializers.ModelSerializer):

@@ -31,11 +31,11 @@ urlpatterns = [
     path('api/products/', views.get_products),
     path('api/products/<int:id>', views.get_product_by_id),
 
-    # path('api/order-forms/', views.get_order_forms),
-    # path('api/order-forms/<int:id>', views.get_order_forms_by_id),
+    path('api/order-forms/', views.get_order_forms),
+    path('api/order-forms/<int:id>', views.get_order_form_by_id),
 
-    # path('api/order-form-lines/', views.get_order_form_lines),
-    # path('api/order-form-lines/<int:id>', views.get_order_form_lines_by_id),
+    path('api/order-form-lines/', views.get_order_form_lines),
+    path('api/order-form-lines/<int:id>', views.get_order_form_line_by_id),
 
 
 ]

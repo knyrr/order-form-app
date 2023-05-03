@@ -1,26 +1,39 @@
-<script setup>
+<!-- <script setup>
 defineProps({
-  email: {
-    type: String,
+  employees: {
+    type: Array,
     required: true
   }
 })
+</script> -->
+
+<script>
+export default {
+  props: {
+    employees: Array
+  },
+  data() {
+    return {
+      employees: this.employees
+    }
+  }
+}
 </script>
 
 <template>
-    <div>
-        <p>Praegune meil on: XXX </p>
-        <form action="/action_page.php">
-            <label for="email-list">Muuda meiliaadressi:</label>
-            <select name="email-list" id="email-list">
-                <option value="1">Volvo</option>
-                <option value="2">Saab</option>
-                <option value="3">Mercedes</option>
-                <option value="4">Audi</option>
-            </select>
-            <input type="submit" value="Muudan">
-        </form> 
-    </div>
+  <div>
+    <p>Praegune meil on: XXX </p>
+    <form action="/action_page.php">
+      <label for="email-list">Muuda meiliaadressi:</label>
+      <select name="email-list" id="email-list">
+        <option value="1">{{ employees }}</option>
+        <option value="2">Saab</option>
+        <option value="3">Mercedes</option>
+        <option value="4">Audi</option>
+      </select>
+      <input type="submit" value="Muudan">
+    </form>
+  </div>
 </template>
 
 <style scoped>
