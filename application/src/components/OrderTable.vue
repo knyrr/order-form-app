@@ -1,24 +1,23 @@
 <template>
-<div id="order-table">
-  <table>
-    <thead>
-      <tr>
-        <th v-for="head in headers" @click="sort(head)">
-        {{ head.label }}
-        </th>
-      </tr>
-    </thead>
-    
-    <tbody>
-      <tr v-for="(data, i) in sortedProperties" :key="data.id">
+  <div id="order-table">
+    <table>
+      <thead>
+        <tr>
+          <th v-for="head in headers" @click="sort(head)">
+            {{ head.title }}
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr v-for="(data, i) in sortedProperties" :key="data.id">
           <td v-for="(head, idx) in headers" :key="head.id">
-              {{ data[head.label] }}
+            {{ data[head.label] }}
           </td>
         </tr>
-    </tbody>
-  </table>
-</div>
-
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script>
@@ -36,14 +35,18 @@ export default {
       sortBy: 'orderNumber'
     }
   },
+  mounted() {
+    console.log("tabeli leht on laaditud")
+  },
   computed: {
     sortedProperties() {
-        //console.log(this.sortBy+ "x")
+      console.log(this.orderData)
+      //console.log(this.sortBy+ "x")
       const type = this.sortBy === 'orderNumber' ? 'Number' : 'String'
       const direction = this.sortDirection
       //const head = {label: this.sortBy}
       const head = this.sortBy
-      console.log(type+" "+direction+" "+head)
+      //console.log(type + " " + direction + " " + head)
       // here is the magic
       return this.properties.sort(this.sortMethods(type, head, direction))
     }
@@ -56,19 +59,19 @@ export default {
       console.log(this.sortBy)
     },
     sortMethods(type, head, direction) {
-       switch (type) {
-          case 'String': {
-            return direction === 1 ?
-              (a, b) => b[head] > a[head] ? -1 : a[head] > b[head] ? 1 : 0 :
-              (a, b) => a[head] > b[head] ? -1 : b[head] > a[head] ? 1 : 0 
-          }
-          case 'Number': {
-            return direction === 1 ?
-              (a, b) => Number(b[head]) - Number(a[head]) :
-              (a, b) => Number(a[head]) - Number(b[head])
-          } 
-       }
+      switch (type) {
+        case 'String': {
+          return direction === 1 ?
+            (a, b) => b[head] > a[head] ? -1 : a[head] > b[head] ? 1 : 0 :
+            (a, b) => a[head] > b[head] ? -1 : b[head] > a[head] ? 1 : 0
+        }
+        case 'Number': {
+          return direction === 1 ?
+            (a, b) => Number(b[head]) - Number(a[head]) :
+            (a, b) => Number(a[head]) - Number(b[head])
+        }
+      }
     }
   }
-  }
+}
 </script>

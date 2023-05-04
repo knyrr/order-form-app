@@ -1,5 +1,5 @@
 <script setup>
-import { inject, onMounted, ref } from 'vue'
+import { inject, onMounted, onUpdated, ref } from 'vue'
 import EmailSelector from './components/EmailSelector.vue'
 import OrderList from './components/OrderList.vue'
 import Table from './components/Table.vue'
@@ -20,18 +20,22 @@ let clientData = []
 let productData = []
 let consolidatedOrderData = []
 
-let showEmailSelector = false
+const showEmailSelector = ref(false)
+const emailSelectorKey = ref(0)
 
+const showOrderTable = ref(false)
+const orderTableKey = ref(0)
 
 onMounted(async () => {
   //töötajate andmed
   await axios
     .get('http://127.0.0.1:8000/api/employees/')
     .then(response => {
-      //employeeData.value = response.data
       employeeData = response.data
       console.log(employeeData)
-      showEmailSelector = true
+      showEmailSelector.value = true
+      emailSelectorKey.value++
+
     })
     .catch(error => {
       console.log(error)
@@ -105,19 +109,15 @@ onMounted(async () => {
     }
     consolidatedOrderData.push(item)
   })
+
   console.log(consolidatedOrderData)
+  showOrderTable.value = true
+  orderTableKey.value++
 })
 
-const studentData = [
-  { ID: "01", Name: "Abiola Esther", Course: "Computer Science", Gender: "Female", Age: "17" },
-  { ID: "02", Name: "Robert V. Kratz", Course: "Philosophy", Gender: "Male", Age: '19' },
-  { ID: "03", Name: "Kristen Anderson", Course: "Economics", Gender: "Female", Age: '20' },
-  { ID: "04", Name: "Adam Simon", Course: "Food science", Gender: "Male", Age: '21' },
-  { ID: "05", Name: "Daisy Katherine", Course: "Business studies", Gender: "Female", Age: '22' },
-]
-//const fields = ['ID','Name','Course','Gender','Age']
-
-//const fields = ['Tellimuse nr','Klient','Kliendikood','Kuupäev','Olek','Nupud']
+onUpdated(() => {
+  console.log("andmeid on uuendatud")
+})
 
 const fields = [
   {
@@ -150,34 +150,14 @@ const fields = [
 
 <template>
   <header>
-    <EmailSelector :employees="employeeData" />
-    <div v-if="showEmailSelector" class="wrapper">
+    <div v-if="showEmailSelector" :key="emailSelectorKey">
       <EmailSelector :employees="employeeData" />
     </div>
   </header>
 
   <main>
-    <!-- <OrderList msg="You did it!" :data="studentData"/> -->
-
-    <OrderTable :fields="fields" :orderData="consolidatedOrderData" />
+    <OrderTable v-if="showOrderTable" :key="orderTableKey" :fields="fields" :orderData="consolidatedOrderData" />
   </main>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
+<style></style>
