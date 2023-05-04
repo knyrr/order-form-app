@@ -17,7 +17,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
 class OrderFormSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderForm
-        fields = ['id', 'number', 'client', 'date']
+        fields = ['id', 'number', 'client', 'date', 'status']
 
 
 class OrderFormLineSerializer(serializers.ModelSerializer):

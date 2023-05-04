@@ -1,12 +1,3 @@
-<!-- <script setup>
-defineProps({
-  employees: {
-    type: Array,
-    required: true
-  }
-})
-</script> -->
-
 <script>
 export default {
   props: ['employees'],
