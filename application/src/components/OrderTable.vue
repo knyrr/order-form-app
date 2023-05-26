@@ -36,7 +36,7 @@ export default {
     }
   },
   mounted() {
-    console.log("tabeli leht on laaditud")
+    console.log("tabeli moodul on laaditud")
   },
   computed: {
     sortedProperties() {

@@ -1,8 +1,6 @@
 <script setup>
 import { inject, onMounted, onUpdated, ref } from 'vue'
 import EmailSelector from './components/EmailSelector.vue'
-import OrderList from './components/OrderList.vue'
-import Table from './components/Table.vue'
 import OrderTable from './components/OrderTable.vue'
 
 const axios = inject('axios')
@@ -85,7 +83,7 @@ onMounted(async () => {
     .then(response => {
       //orderData.value = response.data
       orderData = response.data
-      //console.log(orderData)
+      console.log(orderData)
     })
     .catch(error => {
       console.log(error)
@@ -99,6 +97,7 @@ onMounted(async () => {
       clientName: client.name,
       clientCode: client.code,
       date: element.date,
+      status: element.status,
       lines: [...orderLineData.filter(x => x.order === element.order_form).map(item => {
         let line = {
           productName: productData.find(x => x.id === item.product).name,

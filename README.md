@@ -45,3 +45,12 @@ Koostatud PDF tuleks saata saata laotöötaja emaili aadressile programmaatilise
 ### Oodatud tulemus
 
 Kasutajaliidese kaudu on võimalik leida andmebaasist tellimuse info ja luua selle põhjal saateleht PDF formaadis ning saata see manusena määratud emaili aadressile. Toimiv kood koos SQLite andmebaasi ja paigaldusjuhisega laadida üles koodirepositooriumisse (näiteks GitHub) ning esitamisel jagada linki.
+
+### Serveri käivitamine
+
+Keskkond tööle
+Seejärel käsk: python manage.py runserver
+
+### Rakenduse käivitamine
+
+npm run dev
