@@ -1,8 +1,8 @@
 <script>
-import { ref, onMounted, toRef, getCurrentInstance } from 'vue'
+import { ref, toRef, watch } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 
-const inner_modal = ref(null)
+//const modal = ref(null)
 
 export default {
   props: {
@@ -21,7 +21,7 @@ export default {
   },
   mounted() {
     console.log("tabeli moodul on laaditud")
-    console.log('modal ref:', inner_modal)
+    console.log('modal ref:', modal)
   },
   computed: {
     sortedProperties() {
@@ -56,16 +56,20 @@ export default {
       console.log(data)
       this.modalData = data
       this.showModal = true
-      const modalRef = toRef(this.$refs, 'inner_modal')
-      console.log('modal ref:', modalRef)
-
-      onClickOutside(modalRef, () => {
-        this.showModal = false
-        console.log("kinni")
-        console.log(this.showModal)
-      })
     },
   },
+  watch: {
+    showModal(value) {
+      if (value) {
+        this.$nextTick(() => {
+          this.modalRef = toRef(this.$refs, 'modal')
+          onClickOutside(this.modalRef, () => {
+            this.showModal = false
+          })
+        })
+      }
+    }
+  }
 
 }
 
@@ -74,7 +78,7 @@ export default {
 <template>
   <Teleport to="#modal">
     <div class="modal-bg" v-if="showModal">
-      <div class="modal" ref="inner_modal">
+      <div class="modal" ref="modal">
         <p>hello world!</p>
         <button @click="this.showModal = false" class="close-btn">×</button>
       </div>
