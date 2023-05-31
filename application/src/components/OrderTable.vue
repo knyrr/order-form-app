@@ -2,8 +2,6 @@
 import { ref, toRef, watch } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 
-//const modal = ref(null)
-
 export default {
   props: {
     fields: Array,
@@ -13,19 +11,24 @@ export default {
     return {
       headers: this.fields,
       properties: this.orderData,
-      sortDirection: 1,
+      sortDirection: -1,
       sortBy: 'orderNumber',
       showModal: false,
       modalData: null,
+      modalHeaders: [
+        {
+          label: "productName",
+          title: "Toote nimetus",
+        },
+        {
+          label: "quantity",
+          title: "Kogus",
+        }
+      ]
     }
-  },
-  mounted() {
-    console.log("tabeli moodul on laaditud")
-    console.log('modal ref:', modal)
   },
   computed: {
     sortedProperties() {
-      console.log(this.orderData)
       const type = this.sortBy === 'orderNumber' ? 'Number' : 'String'
       const direction = this.sortDirection
       const head = this.sortBy
@@ -53,7 +56,6 @@ export default {
       }
     },
     openOrderFrom(data) {
-      console.log(data)
       this.modalData = data
       this.showModal = true
     },
@@ -79,8 +81,32 @@ export default {
   <Teleport to="#modal">
     <div class="modal-bg" v-if="showModal">
       <div class="modal" ref="modal">
-        <p>hello world!</p>
         <button @click="this.showModal = false" class="close-btn">×</button>
+        <h1>Tellimusvorm</h1>
+        <div>Tellimuse nr: {{ modalData.orderNumber }}</div>
+        <div>Kliendi nimi: {{ modalData.clientName }}</div>
+        <div>Kliendi kood: {{ modalData.clientCode }}</div>
+        <div>Kuupäev: {{ modalData.date }}</div>
+        <div>Olek: {{ modalData.status }}</div>
+
+        <table>
+          <thead>
+            <tr>
+              <th v-for="head in modalHeaders">
+                {{ head.title }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(line, i) in  modalData.lines" :key="modalHeaders.id">
+              <td v-for="(head, idx) in modalHeaders" :key="head.id">
+                {{ line[head.label] }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <button @click="showModal = false">Sulgen</button>
+        <button @click="showModal = false">Saadan tellimuslehe</button>
       </div>
     </div>
   </Teleport>
@@ -113,6 +139,23 @@ export default {
 </template>
 
 <style>
+table {
+  margin-bottom: 25px;
+}
+
+th {
+  font-weight: bold;
+}
+
+th,
+td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+
+
 .modal-bg {
   position: fixed;
   top: 0;
@@ -127,6 +170,7 @@ export default {
 
 .modal {
   position: relative;
+  min-width: 80vw;
   background: white;
   padding: 50px 100px;
   border-radius: 5px;
@@ -135,6 +179,7 @@ export default {
 
 .close-btn {
   position: absolute;
+  color: black;
   top: 10px;
   right: 10px;
   background: none;

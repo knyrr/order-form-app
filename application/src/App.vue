@@ -4,12 +4,6 @@ import EmailSelector from './components/EmailSelector.vue'
 import OrderTable from './components/OrderTable.vue'
 
 const axios = inject('axios')
-/* const employeeData = ref([])
-const orderData = ref([])
-const orderLineData = ref([])
-const clientData = ref([])
-const productData = ref([])
-const consolidatedData = ref([]) */
 
 let employeeData = []
 let orderData = []
@@ -71,7 +65,7 @@ onMounted(async () => {
     .then(response => {
       //orderLineData.value = response.data
       orderLineData = response.data
-      //console.log(orderLineData)
+      console.log("tellimuste read", orderLineData)
     })
     .catch(error => {
       console.log(error)
@@ -83,7 +77,7 @@ onMounted(async () => {
     .then(response => {
       //orderData.value = response.data
       orderData = response.data
-      console.log(orderData)
+      console.log("tellimused", orderData)
     })
     .catch(error => {
       console.log(error)
@@ -98,7 +92,7 @@ onMounted(async () => {
       clientCode: client.code,
       date: element.date,
       status: element.status,
-      lines: [...orderLineData.filter(x => x.order === element.order_form).map(item => {
+      lines: [...orderLineData.filter(x => x.order_form === element.id).map(item => {
         let line = {
           productName: productData.find(x => x.id === item.product).name,
           quantity: item.quantity
@@ -160,4 +154,17 @@ const fields = [
   </main>
 </template>
 
-<style></style>
+<style>
+button,
+input {
+  background-color: #4CAF50;
+  margin: 0px 10px;
+  border: none;
+  color: white;
+  padding: 5px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+}
+</style>
