@@ -156,6 +156,7 @@ const fields = [
 
   <main>
     <OrderTable v-if="showOrderTable" :key="orderTableKey" :fields="fields" :orderData="consolidatedOrderData" />
+    <div id="modal"></div>
   </main>
 </template>
 
