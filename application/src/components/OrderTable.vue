@@ -1,6 +1,8 @@
 <script>
 import { ref, toRef, watch } from 'vue'
 import { onClickOutside } from '@vueuse/core'
+import { jsPDF } from 'jspdf'
+import 'jspdf-autotable'
 
 export default {
   props: {
@@ -59,6 +61,42 @@ export default {
       this.modalData = data
       this.showModal = true
     },
+    sendPDF() {
+
+      const doc = new jsPDF();
+      var x = 20
+      var y = 20
+      var ln = 5
+
+      doc.setFontSize(16);
+      doc.text("Tellimusvorm", x, y)
+      y += ln + 5
+
+      doc.setFontSize(10);
+      doc.text("Tellimuse nr:", x, y)
+      doc.text(this.modalData.orderNumber.toString(), x + 40, y)
+      y += ln
+      doc.text("Kliendi nimi:", x, y)
+      doc.text(this.modalData.clientName, x + 40, y)
+      y += ln
+      doc.text("Kliendi kood:", x, y)
+      doc.text(this.modalData.clientCode, x + 40, y)
+      y += ln
+      doc.text("Kuupäev:", x, y)
+      doc.text(this.modalData.date.toString(), x + 40, y)
+      y += ln
+
+      const headers = this.modalHeaders.map(header => header.title);
+      const data = this.modalData.lines.map(line => this.modalHeaders.map(header => line[header.label]));
+
+      doc.autoTable({
+        head: [headers],
+        body: data,
+        startY: y
+      });
+
+      doc.save('a4.pdf');
+    }
   },
   watch: {
     showModal(value) {
@@ -82,31 +120,33 @@ export default {
     <div class="modal-bg" v-if="showModal">
       <div class="modal" ref="modal">
         <button @click="this.showModal = false" class="close-btn">×</button>
-        <h1>Tellimusvorm</h1>
-        <div>Tellimuse nr: {{ modalData.orderNumber }}</div>
-        <div>Kliendi nimi: {{ modalData.clientName }}</div>
-        <div>Kliendi kood: {{ modalData.clientCode }}</div>
-        <div>Kuupäev: {{ modalData.date }}</div>
-        <div>Olek: {{ modalData.status }}</div>
+        <div id="modal-content" ref="content">
+          <h1>Tellimusvorm</h1>
+          <div>Tellimuse nr: {{ modalData.orderNumber }}</div>
+          <div>Kliendi nimi: {{ modalData.clientName }}</div>
+          <div>Kliendi kood: {{ modalData.clientCode }}</div>
+          <div>Kuupäev: {{ modalData.date }}</div>
+          <div>Olek: {{ modalData.status }}</div>
 
-        <table>
-          <thead>
-            <tr>
-              <th v-for="head in modalHeaders">
-                {{ head.title }}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(line, i) in  modalData.lines" :key="modalHeaders.id">
-              <td v-for="(head, idx) in modalHeaders" :key="head.id">
-                {{ line[head.label] }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+          <table>
+            <thead>
+              <tr>
+                <th v-for="head in modalHeaders">
+                  {{ head.title }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(line, i) in  modalData.lines" :key="modalHeaders.id">
+                <td v-for="(head, idx) in modalHeaders" :key="head.id">
+                  {{ line[head.label] }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <button @click="showModal = false">Sulgen</button>
-        <button @click="showModal = false">Saadan tellimuslehe</button>
+        <button @click="sendPDF()">Saadan tellimuslehe</button>
       </div>
     </div>
   </Teleport>
