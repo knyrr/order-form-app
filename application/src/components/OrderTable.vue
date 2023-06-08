@@ -170,7 +170,7 @@ td {
 
 .modal {
   position: relative;
-  min-width: 80vw;
+  min-width: 60vw;
   background: white;
   padding: 50px 100px;
   border-radius: 5px;

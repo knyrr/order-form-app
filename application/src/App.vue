@@ -141,17 +141,20 @@ const fields = [
 
 </script>
 
-<template>
-  <header>
-    <div v-if="showEmailSelector" :key="emailSelectorKey">
-      <EmailSelector :employees="employeeData" />
-    </div>
-  </header>
+<template >
+  <div class="app">
+    <header>
+      <h1>Tellimusvormide saatmine</h1>
+      <div v-if="showEmailSelector" :key="emailSelectorKey">
+        <EmailSelector :employees="employeeData" />
+      </div>
+    </header>
 
-  <main>
-    <OrderTable v-if="showOrderTable" :key="orderTableKey" :fields="fields" :orderData="consolidatedOrderData" />
-    <div id="modal"></div>
-  </main>
+    <main>
+      <OrderTable v-if="showOrderTable" :key="orderTableKey" :fields="fields" :orderData="consolidatedOrderData" />
+      <div id="modal"></div>
+    </main>
+  </div>
 </template>
 
 <style>
@@ -166,5 +169,9 @@ input {
   text-decoration: none;
   display: inline-block;
   font-size: 14px;
+}
+
+.app {
+  margin: 25px;
 }
 </style>
