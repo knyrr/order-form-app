@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from api import views
 from rest_framework.urlpatterns import format_suffix_patterns
+from .views import send_pdf_email
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -36,6 +37,8 @@ urlpatterns = [
 
     path('api/order-form-lines/', views.get_order_form_lines),
     path('api/order-form-lines/<int:id>', views.get_order_form_line_by_id),
+
+    path('api/send-pdf/', send_pdf_email, name='send_pdf_email'),
 
 
 ]

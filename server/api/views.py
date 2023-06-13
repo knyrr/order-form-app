@@ -8,6 +8,14 @@ from .serializers import (
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from django.http import HttpResponse
+# from django.core.mail import EmailMessage
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+import os
 
 # region clients
 
@@ -212,4 +220,104 @@ def get_order_form_line_by_id(request, id, format=None):
     elif request.method == 'DELETE':
         orderFormLine.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+# endregion
+
+# region send pdf
+
+# Setup port number and server name
+
+
+def send_pdf_email(request):
+    smtp_port = 587                 # Standard secure SMTP port
+    smtp_server = "smtp.gmail.com"  # Google SMTP Server
+
+    # Set up the email lists
+    email_from = os.environ.get('EMAIL_HOST_USER')
+    pswd = os.environ.get('EMAIL_HOST_PASSWORD')
+
+    email_to = "rynk@tlu.ee"
+
+    subject = "New email from TIE with attachments!!"
+
+    body = f"""
+        line 1
+        line 2
+        line 3
+        etc
+        """
+
+    # make a MIME object to define parts of the email
+    msg = MIMEMultipart()
+    msg['From'] = email_from
+    msg['To'] = email_to
+    msg['Subject'] = subject
+
+    # Attach the body of the message
+    msg.attach(MIMEText(body, 'plain'))
+
+    # Define the file to attach
+    filename = "./random_data.csv"
+
+    # Open the file in python as a binary
+    attachment = open(filename, 'rb')  # r for read and b for binary
+
+    # Encode as base 64
+    attachment_package = MIMEBase('application', 'octet-stream')
+    attachment_package.set_payload((attachment).read())
+    encoders.encode_base64(attachment_package)
+    attachment_package.add_header(
+        'Content-Disposition', "attachment; filename= " + filename)
+    msg.attach(attachment_package)
+
+    # Cast as string
+    text = msg.as_string()
+
+    # Connect with the server
+    print("Connecting to server...")
+    TIE_server = smtplib.SMTP(smtp_server, smtp_port)
+    TIE_server.starttls()
+    TIE_server.login(email_from, pswd)
+    print("Succesfully connected to server")
+    print()
+
+    # Send emails to "person" as list is iterated
+    print(f"Sending email to: {person}...")
+    TIE_server.sendmail(email_from, person, text)
+    print(f"Email sent to: {person}")
+    print()
+
+    # Close the port
+    TIE_server.quit()
+
+    return HttpResponse('Email sent with PDF attachment.')
+
+
+# @api_view(['GET', 'PUT', 'DELETE'])
+
+
+# def send_pdf_email(request):
+#     # Generate the PDF
+#     # generate_pdf()
+
+#     # Create an email message object
+#     email = EmailMessage(
+#         'PDF Attachment',
+#         'Please find attached the PDF file.',
+#         'martin.rynk@gmail.com',  # Replace with sender's email address
+#         ['martin.runk@tlu.ee'],  # Replace with recipient's email address(es)
+#         # cc=['cc@example.com'],  # Replace with CC email address(es) if needed
+#     )
+
+#     # Attach the PDF file to the email
+#     # email.attach_file('path/to/your/pdf.pdf')
+
+#     # Send the email
+#     email.send()
+
+#     # send_mail('Test', 'This is a test', 'martin.rynk@gmail.com',
+#     #           ['rynk@tlu.ee'], fail_silently=False)
+
+#     return HttpResponse('Email sent with PDF attachment.')
+
+
 # endregion
