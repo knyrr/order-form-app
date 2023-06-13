@@ -2,6 +2,14 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+/* import dotenv from 'dotenv'
+dotenv.config() */
+/* import { env } from '@next/env'
+
+env({
+  // Specify the path to your .env file
+  path: '.env'
+}) */
 
 import './assets/main.css'
 

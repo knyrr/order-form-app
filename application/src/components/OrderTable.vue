@@ -4,6 +4,9 @@ import { onClickOutside } from '@vueuse/core'
 import { jsPDF } from 'jspdf'
 import 'jspdf-autotable'
 
+console.log(import.meta.env.VITE_SECRET_KEY)
+
+
 export default {
   props: {
     fields: Array,
