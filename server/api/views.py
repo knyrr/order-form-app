@@ -232,17 +232,15 @@ def send_pdf_email(request):
     smtp_port = 587                 # Standard secure SMTP port
     smtp_server = "smtp.gmail.com"  # Google SMTP Server
 
-    # Set up the email lists
     email_from = os.environ.get('EMAIL_HOST_USER')
     pswd = os.environ.get('EMAIL_HOST_PASSWORD')
 
     email_to = "rynk@tlu.ee"
 
     subject = "New email from TIE with attachments!!"
-
     body = "Tere"
 
-    # make a MIME object to define parts of the email
+    # MIME object
     msg = MIMEMultipart()
     msg['From'] = email_from
     msg['To'] = email_to
@@ -252,7 +250,7 @@ def send_pdf_email(request):
     msg.attach(MIMEText(body, 'plain'))
 
     # Define the file to attach
-    filename = "../random_data.csv"
+    filename = "C:/Users/marti/Documents/Proovitood/flowit/server/random_data.csv"
 
     # Open the file in python as a binary
     attachment = open(filename, 'rb')  # r for read and b for binary
@@ -268,24 +266,22 @@ def send_pdf_email(request):
     # Cast as string
     text = msg.as_string()
 
-    # Connect with the server
-    print("Connecting to server...")
-    TIE_server = smtplib.SMTP(smtp_server, smtp_port)
-    TIE_server.starttls()
-    TIE_server.login(email_from, pswd)
-    print("Succesfully connected to server")
-    print()
-
-    # Send emails to "person" as list is iterated
-    print(f"Sending email to: {email_to}...")
-    TIE_server.sendmail(email_from, email_to, text)
-    print(f"Email sent to: {email_to}")
-    print()
+    try:
+        # Connect with the server
+        print("Connecting to server...")
+        TIE_server = smtplib.SMTP(smtp_server, smtp_port)
+        TIE_server.starttls()
+        TIE_server.login(email_from, pswd)
+        print("Succesfully connected to server")
+        TIE_server.sendmail(email_from, email_to, text)
+        print(f"Email sent to: {email_to}")
+    except Exception as e:
+        print(e)
 
     # Close the port
     TIE_server.quit()
 
-    return HttpResponse('Email sent with PDF attachment.')
+    return Response({"message": "Success"})
 
 
 # @api_view(['GET', 'PUT', 'DELETE'])
