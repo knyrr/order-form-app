@@ -227,6 +227,7 @@ def get_order_form_line_by_id(request, id, format=None):
 # Setup port number and server name
 
 
+# @api_view(['GET'])
 def send_pdf_email(request):
     smtp_port = 587                 # Standard secure SMTP port
     smtp_server = "smtp.gmail.com"  # Google SMTP Server
@@ -239,12 +240,7 @@ def send_pdf_email(request):
 
     subject = "New email from TIE with attachments!!"
 
-    body = f"""
-        line 1
-        line 2
-        line 3
-        etc
-        """
+    body = "Tere"
 
     # make a MIME object to define parts of the email
     msg = MIMEMultipart()
@@ -256,7 +252,7 @@ def send_pdf_email(request):
     msg.attach(MIMEText(body, 'plain'))
 
     # Define the file to attach
-    filename = "./random_data.csv"
+    filename = "../random_data.csv"
 
     # Open the file in python as a binary
     attachment = open(filename, 'rb')  # r for read and b for binary
@@ -281,9 +277,9 @@ def send_pdf_email(request):
     print()
 
     # Send emails to "person" as list is iterated
-    print(f"Sending email to: {person}...")
-    TIE_server.sendmail(email_from, person, text)
-    print(f"Email sent to: {person}")
+    print(f"Sending email to: {email_to}...")
+    TIE_server.sendmail(email_from, email_to, text)
+    print(f"Email sent to: {email_to}")
     print()
 
     # Close the port
