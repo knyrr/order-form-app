@@ -3,8 +3,10 @@ import { ref, toRef, watch } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import { jsPDF } from 'jspdf'
 import 'jspdf-autotable'
+import axios from 'axios'
 
 console.log(import.meta.env.VITE_SECRET_KEY)
+//const axios = inject('axios')
 
 
 export default {
@@ -64,8 +66,7 @@ export default {
       this.modalData = data
       this.showModal = true
     },
-    sendPDF() {
-
+    createPDF() {
       const doc = new jsPDF();
       var x = 20
       var y = 20
@@ -97,8 +98,27 @@ export default {
         body: data,
         startY: y
       });
+      return doc
 
+    },
+    downloadPDF() {
+      const doc = this.createPDF()
       doc.save('a4.pdf');
+    },
+    sendPDF() {
+      var doc = this.createPDF()
+      const pdfDataUrl = doc.output('datauristring')
+      console.log(pdfDataUrl)
+
+      axios
+        //.get('http://127.0.0.1:8000/api/send-pdf/')
+        .post('http://127.0.0.1:8000/api/send-pdf/', { pdfDataUrl })
+        .then(response => {
+          console.log(response)
+        })
+        .catch(error => {
+          console.log(error)
+        })
     }
   },
   watch: {
@@ -149,6 +169,7 @@ export default {
           </table>
         </div>
         <button @click="showModal = false">Sulgen</button>
+        <button @click="downloadPDF()">Laadin tellimuslehe alla</button>
         <button @click="sendPDF()">Saadan tellimuslehe</button>
       </div>
     </div>

@@ -16,6 +16,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 import os
+import base64
+from io import BytesIO
 
 # region clients
 
@@ -227,61 +229,62 @@ def get_order_form_line_by_id(request, id, format=None):
 # Setup port number and server name
 
 
-# @api_view(['GET'])
+@api_view(['GET', 'POST'])
 def send_pdf_email(request):
-    smtp_port = 587                 # Standard secure SMTP port
-    smtp_server = "smtp.gmail.com"  # Google SMTP Server
+    if request.method == 'POST':
+        # email_to
+        pdf_data_url = request.data['pdfDataUrl']
+        binary_data = base64.b64decode(pdf_data_url.split(',')[1])
 
-    email_from = os.environ.get('EMAIL_HOST_USER')
-    pswd = os.environ.get('EMAIL_HOST_PASSWORD')
+        smtp_port = 587                 # Standard secure SMTP port
+        smtp_server = "smtp.gmail.com"  # Google SMTP Server
 
-    email_to = "rynk@tlu.ee"
+        email_from = os.environ.get('EMAIL_HOST_USER')
+        pswd = os.environ.get('EMAIL_HOST_PASSWORD')
 
-    subject = "New email from TIE with attachments!!"
-    body = "Tere"
+        email_to = "rynk@tlu.ee"
 
-    # MIME object
-    msg = MIMEMultipart()
-    msg['From'] = email_from
-    msg['To'] = email_to
-    msg['Subject'] = subject
+        subject = "New email from TIE with attachments!!"
+        body = "Tere"
 
-    # Attach the body of the message
-    msg.attach(MIMEText(body, 'plain'))
+        # MIME object
+        msg = MIMEMultipart()
+        msg['From'] = email_from
+        msg['To'] = email_to
+        msg['Subject'] = subject
 
-    # Define the file to attach
-    filename = "C:/Users/marti/Documents/Proovitood/flowit/server/random_data.csv"
+        msg.attach(MIMEText(body, 'plain'))
 
-    # Open the file in python as a binary
-    attachment = open(filename, 'rb')  # r for read and b for binary
+        filename = "generated.pdf"
+        attachment = BytesIO(binary_data)
 
-    # Encode as base 64
-    attachment_package = MIMEBase('application', 'octet-stream')
-    attachment_package.set_payload((attachment).read())
-    encoders.encode_base64(attachment_package)
-    attachment_package.add_header(
-        'Content-Disposition', "attachment; filename= " + filename)
-    msg.attach(attachment_package)
+        # Encode as base 64
+        attachment_package = MIMEBase('application', 'octet-stream')
+        attachment_package.set_payload((attachment).read())
+        encoders.encode_base64(attachment_package)
+        attachment_package.add_header(
+            'Content-Disposition', "attachment; filename= " + filename)
+        msg.attach(attachment_package)
 
-    # Cast as string
-    text = msg.as_string()
+        # Cast as string
+        text = msg.as_string()
 
-    try:
-        # Connect with the server
-        print("Connecting to server...")
-        TIE_server = smtplib.SMTP(smtp_server, smtp_port)
-        TIE_server.starttls()
-        TIE_server.login(email_from, pswd)
-        print("Succesfully connected to server")
-        TIE_server.sendmail(email_from, email_to, text)
-        print(f"Email sent to: {email_to}")
-    except Exception as e:
-        print(e)
+        try:
+            # Connect with the server
+            print("Connecting to server...")
+            TIE_server = smtplib.SMTP(smtp_server, smtp_port)
+            TIE_server.starttls()
+            TIE_server.login(email_from, pswd)
+            print("Succesfully connected to server")
+            TIE_server.sendmail(email_from, email_to, text)
+            print(f"Email sent to: {email_to}")
+        except Exception as e:
+            print(e)
 
-    # Close the port
-    TIE_server.quit()
+        # Close the port
+        TIE_server.quit()
 
-    return Response({"message": "Success"})
+        return HttpResponse('Email sent with PDF attachment.')
 
 
 # @api_view(['GET', 'PUT', 'DELETE'])
