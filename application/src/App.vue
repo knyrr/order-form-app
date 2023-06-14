@@ -66,7 +66,6 @@ onMounted(async () => {
     .get('http://127.0.0.1:8000/api/order-forms/')
     .then(response => {
       orderData = response.data
-      console.log(orderData)
     })
     .catch(error => {
       console.log(error)
@@ -94,7 +93,6 @@ onMounted(async () => {
   })
   showOrderTable.value = true
   orderTableKey.value++
-  console.log(consolidatedOrderData)
 })
 
 
