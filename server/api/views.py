@@ -232,7 +232,6 @@ def get_order_form_line_by_id(request, id, format=None):
 @api_view(['GET', 'POST'])
 def send_pdf_email(request):
     if request.method == 'POST':
-        # email_to
         pdf_data_url = request.data['pdfDataUrl']
         binary_data = base64.b64decode(pdf_data_url.split(',')[1])
 
@@ -242,9 +241,9 @@ def send_pdf_email(request):
         email_from = os.environ.get('EMAIL_HOST_USER')
         pswd = os.environ.get('EMAIL_HOST_PASSWORD')
 
-        email_to = "rynk@tlu.ee"
+        email_to = request.data['email_to']
 
-        subject = "New email from TIE with attachments!!"
+        subject = "Tellimusvorm"
         body = "Tere"
 
         # MIME object

@@ -1,6 +1,5 @@
 <script setup>
 import { inject, onMounted, onUpdated, ref } from 'vue'
-import EmailSelector from './components/EmailSelector.vue'
 import OrderTable from './components/OrderTable.vue'
 
 const axios = inject('axios')
@@ -24,7 +23,6 @@ onMounted(async () => {
     .get('http://127.0.0.1:8000/api/employees/')
     .then(response => {
       employeeData = response.data
-      console.log(employeeData)
       showEmailSelector.value = true
       emailSelectorKey.value++
 
@@ -37,23 +35,17 @@ onMounted(async () => {
   await axios
     .get('http://127.0.0.1:8000/api/clients/')
     .then(response => {
-      //clientData.value = response.data
       clientData = response.data
-      //console.log(clientData)
     })
     .catch(error => {
       console.log(error)
     })
 
-
-
   //toodete andmed
   await axios
     .get('http://127.0.0.1:8000/api/products/')
     .then(response => {
-      //productData.value = response.data
       productData = response.data
-      //console.log(JSON.parse(JSON.stringify(productData.value)))
     })
     .catch(error => {
       console.log(error)
@@ -63,9 +55,7 @@ onMounted(async () => {
   await axios
     .get('http://127.0.0.1:8000/api/order-form-lines/')
     .then(response => {
-      //orderLineData.value = response.data
       orderLineData = response.data
-      console.log("tellimuste read", orderLineData)
     })
     .catch(error => {
       console.log(error)
@@ -75,9 +65,7 @@ onMounted(async () => {
   await axios
     .get('http://127.0.0.1:8000/api/order-forms/')
     .then(response => {
-      //orderData.value = response.data
       orderData = response.data
-      console.log("tellimused", orderData)
     })
     .catch(error => {
       console.log(error)
@@ -102,15 +90,10 @@ onMounted(async () => {
     }
     consolidatedOrderData.push(item)
   })
-
-  console.log(consolidatedOrderData)
   showOrderTable.value = true
   orderTableKey.value++
 })
 
-onUpdated(() => {
-  console.log("andmeid on uuendatud")
-})
 
 const fields = [
   {
@@ -143,15 +126,10 @@ const fields = [
 
 <template >
   <div class="app">
-    <header>
-      <h1>Tellimusvormide saatmine</h1>
-      <div v-if="showEmailSelector" :key="emailSelectorKey">
-        <EmailSelector :employees="employeeData" />
-      </div>
-    </header>
-
     <main>
-      <OrderTable v-if="showOrderTable" :key="orderTableKey" :fields="fields" :orderData="consolidatedOrderData" />
+      <h1>Tellimusvormide saatmine</h1>
+      <OrderTable v-if="showOrderTable" :key="orderTableKey" :fields="fields" :orderData="consolidatedOrderData"
+        :employees="employeeData" />
       <div id="modal"></div>
     </main>
   </div>

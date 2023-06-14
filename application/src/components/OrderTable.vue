@@ -1,18 +1,21 @@
 <script>
-import { ref, toRef, watch } from 'vue'
+import { ref, toRef, watch, Teleport } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import { jsPDF } from 'jspdf'
 import 'jspdf-autotable'
 import axios from 'axios'
-
-console.log(import.meta.env.VITE_SECRET_KEY)
-//const axios = inject('axios')
+import EmailSelector from './EmailSelector.vue'
 
 
 export default {
   props: {
     fields: Array,
-    orderData: Array
+    orderData: Array,
+    employees: Array
+  },
+  components: {
+    Teleport,
+    EmailSelector
   },
   data() {
     return {
@@ -46,7 +49,6 @@ export default {
     sort(head) {
       this.sortBy = head.label
       this.sortDirection *= -1
-      console.log(this.sortBy)
     },
     sortMethods(type, head, direction) {
       switch (type) {
@@ -108,11 +110,14 @@ export default {
     sendPDF() {
       var doc = this.createPDF()
       const pdfDataUrl = doc.output('datauristring')
-      console.log(pdfDataUrl)
+      //console.log(pdfDataUrl)
+      const userFromLocalStorage = localStorage.getItem("user")
+
+      const email_to = "rynk@tlu.ee"
 
       axios
         //.get('http://127.0.0.1:8000/api/send-pdf/')
-        .post('http://127.0.0.1:8000/api/send-pdf/', { pdfDataUrl })
+        .post('http://127.0.0.1:8000/api/send-pdf/', { pdfDataUrl, email_to })
         .then(response => {
           console.log(response)
         })
@@ -170,6 +175,11 @@ export default {
         </div>
         <button @click="showModal = false">Sulgen</button>
         <button @click="downloadPDF()">Laadin tellimuslehe alla</button>
+
+        <div>
+          <EmailSelector :employees="employees" />
+        </div>
+
         <button @click="sendPDF()">Saadan tellimuslehe</button>
       </div>
     </div>
