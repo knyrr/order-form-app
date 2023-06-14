@@ -4,7 +4,7 @@ import { onClickOutside } from '@vueuse/core'
 import { jsPDF } from 'jspdf'
 import 'jspdf-autotable'
 import axios from 'axios'
-import EmailSelector from './EmailSelector.vue'
+import { useToast } from "vue-toastification";
 
 
 export default {
@@ -38,6 +38,10 @@ export default {
       selectedError: null,
       selectedEmail: null,
     }
+  },
+  setup() {
+    const toast = useToast();
+    return { toast }
   },
   computed: {
     sortedProperties() {
@@ -120,6 +124,11 @@ export default {
           .post('http://127.0.0.1:8000/api/send-pdf/', { pdfDataUrl, email_to: this.selectedEmail })
           .then(response => {
             console.log(response)
+            if (response.status === 200) {
+              this.toast.success("Saadetud!")
+            } else {
+              this.toast.error("Viga saatmisel!")
+            }
           })
           .catch(error => {
             console.log(error)
