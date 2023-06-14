@@ -37,6 +37,7 @@ urlpatterns = [
     path('api/order-form-lines/', views.get_order_form_lines),
     path('api/order-form-lines/<int:id>', views.get_order_form_line_by_id),
 
+    path('api/send-pdf/', views.send_pdf_email, name='send_pdf_email'),
 
 ]
 

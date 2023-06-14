@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+# from . import config
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,13 +29,17 @@ django-insecure-lif1d@+edbgi=hk11b+713b)32vqtp%%8teh7nfv!$@$l#%_bf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
-CORS_ORIGIN_ALLOW_ALL = True
+# ALLOWED_HOSTS = ['*']
+# CORS_ORIGIN_ALLOW_ALL = True
 
 
-""" ALLOWED_HOSTS = ['http://localhost:5173']
+# ALLOWED_HOSTS = ['http://localhost:5173']
 CORS_ORIGIN_ALLOW_ALL = False
-CORS_ORIGIN_WHITELIST = ('http://localhost:5173',) """
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]
+# CORS_ORIGIN_WHITELIST = ('http://localhost:5173',)
 
 # Application definition
 

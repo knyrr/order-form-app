@@ -1,11 +1,20 @@
 <script>
-import { ref, toRef, watch } from 'vue'
+import { toRef, Teleport } from 'vue'
 import { onClickOutside } from '@vueuse/core'
+import { jsPDF } from 'jspdf'
+import 'jspdf-autotable'
+import axios from 'axios'
+import { useToast } from "vue-toastification";
+
 
 export default {
   props: {
     fields: Array,
-    orderData: Array
+    orderData: Array,
+    employees: Array
+  },
+  components: {
+    Teleport
   },
   data() {
     return {
@@ -24,8 +33,15 @@ export default {
           label: "quantity",
           title: "Kogus",
         }
-      ]
+      ],
+      selected: null,
+      selectedError: null,
+      selectedEmail: null,
     }
+  },
+  setup() {
+    const toast = useToast();
+    return { toast }
   },
   computed: {
     sortedProperties() {
@@ -39,7 +55,6 @@ export default {
     sort(head) {
       this.sortBy = head.label
       this.sortDirection *= -1
-      console.log(this.sortBy)
     },
     sortMethods(type, head, direction) {
       switch (type) {
@@ -59,6 +74,79 @@ export default {
       this.modalData = data
       this.showModal = true
     },
+    createPDF() {
+      const doc = new jsPDF();
+      var x = 20
+      var y = 20
+      var ln = 5
+
+      doc.setFontSize(16);
+      doc.text("Tellimusvorm", x, y)
+      y += ln + 5
+
+      doc.setFontSize(10);
+      doc.text("Tellimuse nr:", x, y)
+      doc.text(this.modalData.orderNumber.toString(), x + 40, y)
+      y += ln
+      doc.text("Kliendi nimi:", x, y)
+      doc.text(this.modalData.clientName, x + 40, y)
+      y += ln
+      doc.text("Kliendi kood:", x, y)
+      doc.text(this.modalData.clientCode, x + 40, y)
+      y += ln
+      doc.text("Kuupäev:", x, y)
+      doc.text(this.modalData.date.toString(), x + 40, y)
+      y += ln
+
+      const headers = this.modalHeaders.map(header => header.title);
+      const data = this.modalData.lines.map(line => this.modalHeaders.map(header => line[header.label]));
+
+      doc.autoTable({
+        head: [headers],
+        body: data,
+        startY: y
+      });
+      return doc
+
+    },
+    downloadPDF() {
+      const doc = this.createPDF()
+      doc.save('a4.pdf');
+    },
+    sendPDF() {
+      if (this.selected != null) {
+        this.selectedError = null
+        this.selectedEmail = this.employees.find(x => x.id === parseInt(this.selected)).email
+        var doc = this.createPDF()
+        const pdfDataUrl = doc.output('datauristring')
+        const updatedData = {
+          id: this.modalData.id,
+          number: this.modalData.orderNumber,
+          client: this.modalData.clientId,
+          date: this.modalData.date,
+          status: "DELIVERED"
+        }
+
+        axios
+          .post('http://127.0.0.1:8000/api/send-pdf/', { pdfDataUrl, email_to: this.selectedEmail, orderFormData: updatedData })
+          .then(response => {
+            console.log(response)
+            if (response.status === 200) {
+              this.toast.success("Saadetud!")
+              this.modalData.status = "DELIVERED"
+
+            } else {
+              this.toast.error("Viga saatmisel!")
+            }
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      } else {
+        this.selectedError = "Vali meiliaadress"
+      }
+
+    }
   },
   watch: {
     showModal(value) {
@@ -82,31 +170,47 @@ export default {
     <div class="modal-bg" v-if="showModal">
       <div class="modal" ref="modal">
         <button @click="this.showModal = false" class="close-btn">×</button>
-        <h1>Tellimusvorm</h1>
-        <div>Tellimuse nr: {{ modalData.orderNumber }}</div>
-        <div>Kliendi nimi: {{ modalData.clientName }}</div>
-        <div>Kliendi kood: {{ modalData.clientCode }}</div>
-        <div>Kuupäev: {{ modalData.date }}</div>
-        <div>Olek: {{ modalData.status }}</div>
+        <div id="modal-content" ref="content">
+          <h1>Tellimusvorm</h1>
+          <div>Tellimuse nr: {{ modalData.orderNumber }}</div>
+          <div>Kliendi nimi: {{ modalData.clientName }}</div>
+          <div>Kliendi kood: {{ modalData.clientCode }}</div>
+          <div>Kuupäev: {{ modalData.date }}</div>
+          <div>Olek: {{ modalData.status }}</div>
 
-        <table>
-          <thead>
-            <tr>
-              <th v-for="head in modalHeaders">
-                {{ head.title }}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(line, i) in  modalData.lines" :key="modalHeaders.id">
-              <td v-for="(head, idx) in modalHeaders" :key="head.id">
-                {{ line[head.label] }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+          <table>
+            <thead>
+              <tr>
+                <th v-for="head in modalHeaders">
+                  {{ head.title }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(line, i) in  modalData.lines" :key="modalHeaders.id">
+                <td v-for="(head, idx) in modalHeaders" :key="head.id">
+                  {{ line[head.label] }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <form class="email-form">
+          <label for="email-list">Saaja:</label>
+          <select name="email-list" id="email-list" v-model="selected">
+            <option disabled :value="null" v-if="!selected">Vali töötaja</option>
+            <option v-for="employee in employees" :value=employee.id>{{ employee.email }}</option>
+          </select>
+          <input type="submit" value="Saadan" @click.prevent="sendPDF()">
+          <p v-if="!selected && selectedError" class="error-message">{{ selectedError }}</p>
+        </form>
+
+        <button @click="downloadPDF()">Laadin alla</button>
+
         <button @click="showModal = false">Sulgen</button>
-        <button @click="showModal = false">Saadan tellimuslehe</button>
+
+
       </div>
     </div>
   </Teleport>
@@ -154,8 +258,6 @@ td {
   border-bottom: 1px solid #ddd;
 }
 
-
-
 .modal-bg {
   position: fixed;
   top: 0;
@@ -185,5 +287,14 @@ td {
   background: none;
   border: none;
   cursor: pointer
+}
+
+.email-form {
+  margin-bottom: 20px;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
 }
 </style>

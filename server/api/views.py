@@ -8,6 +8,16 @@ from .serializers import (
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+# from django.http import HttpResponse
+# from django.core.mail import EmailMessage
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+import os
+import base64
+from io import BytesIO
 
 # region clients
 
@@ -212,4 +222,77 @@ def get_order_form_line_by_id(request, id, format=None):
     elif request.method == 'DELETE':
         orderFormLine.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+# endregion
+
+# region send pdf
+
+
+@api_view(['GET', 'POST'])
+def send_pdf_email(request):
+    if request.method == 'POST':
+        pdf_data_url = request.data['pdfDataUrl']
+        binary_data = base64.b64decode(pdf_data_url.split(',')[1])
+
+        smtp_port = 587                 # Standard secure SMTP port
+        smtp_server = "smtp.gmail.com"  # Google SMTP Server
+
+        email_from = os.environ.get('EMAIL_HOST_USER')
+        pswd = os.environ.get('EMAIL_HOST_PASSWORD')
+
+        email_to = request.data['email_to']
+
+        subject = "Tellimusvorm"
+        body = "Tere"
+
+        # MIME object
+        msg = MIMEMultipart()
+        msg['From'] = email_from
+        msg['To'] = email_to
+        msg['Subject'] = subject
+
+        msg.attach(MIMEText(body, 'plain'))
+
+        filename = "generated.pdf"
+        attachment = BytesIO(binary_data)
+
+        # Encode as base 64
+        attachment_package = MIMEBase('application', 'octet-stream')
+        attachment_package.set_payload((attachment).read())
+        encoders.encode_base64(attachment_package)
+        attachment_package.add_header(
+            'Content-Disposition', "attachment; filename= " + filename)
+        msg.attach(attachment_package)
+
+        # Cast as string
+        text = msg.as_string()
+
+        try:
+            # Connect with the server
+            TIE_server = smtplib.SMTP(smtp_server, smtp_port)
+            TIE_server.starttls()
+            TIE_server.login(email_from, pswd)
+            TIE_server.sendmail(email_from, email_to, text)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        # Close the port
+        TIE_server.quit()
+
+        # muudan tellimuse staatuse saadetuks
+        updatedData = request.data['orderFormData']
+
+        try:
+            orderForm = OrderForm.objects.get(pk=updatedData['id'])
+        except OrderForm.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = OrderFormSerializer(
+            orderForm, data=updatedData)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 # endregion
