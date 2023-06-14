@@ -1,25 +1,5 @@
 # Flowiti proovitöö
 
-## Andmebaas
-
-Tabelid:
-
-- client (id, name):
-  CREATE TABLE IF NOT EXISTS client (id INTEGER PRIMARY KEY, name TEXT);
-  INSERT INTO client (name) VALUES ('Klient 1');
-
-- product (id, name):
-  CREATE TABLE IF NOT EXISTS product (id INTEGER PRIMARY KEY, name TEXT);
-
-- order_form (number, client_id, date):
-  CREATE TABLE IF NOT EXISTS order_form (id INTEGER PRIMARY KEY, client_id INTEGER, date TEXT, FOREIGN KEY(client_id) REFERENCES client(id));
-
-- order_form_line (id, order_form_id, product, quantity):
-  CREATE TABLE IF NOT EXISTS form_line (id INTEGER PRIMARY KEY, order_form_id INTEGER, name TEXT, FOREIGN KEY(order_form_id) REFERENCES order_form(id));
-
-- employee (id, email)
-  CREATE TABLE IF NOT EXISTS employee (id INTEGER PRIMARY KEY, email TEXT);
-
 ## Prooviülesanne
 
 ### Lugu
@@ -46,11 +26,3 @@ Koostatud PDF tuleks saata saata laotöötaja emaili aadressile programmaatilise
 
 Kasutajaliidese kaudu on võimalik leida andmebaasist tellimuse info ja luua selle põhjal saateleht PDF formaadis ning saata see manusena määratud emaili aadressile. Toimiv kood koos SQLite andmebaasi ja paigaldusjuhisega laadida üles koodirepositooriumisse (näiteks GitHub) ning esitamisel jagada linki.
 
-### Serveri käivitamine
-
-Keskkond tööle
-Seejärel käsk: python manage.py runserver
-
-### Rakenduse käivitamine
-
-npm run dev
