@@ -14,8 +14,7 @@ export default {
     employees: Array
   },
   components: {
-    Teleport,
-    EmailSelector
+    Teleport
   },
   data() {
     return {
@@ -34,7 +33,10 @@ export default {
           label: "quantity",
           title: "Kogus",
         }
-      ]
+      ],
+      selected: null,
+      selectedError: null,
+      selectedEmail: null,
     }
   },
   computed: {
@@ -108,22 +110,24 @@ export default {
       doc.save('a4.pdf');
     },
     sendPDF() {
-      var doc = this.createPDF()
-      const pdfDataUrl = doc.output('datauristring')
-      //console.log(pdfDataUrl)
-      const userFromLocalStorage = localStorage.getItem("user")
+      if (this.selected != null) {
+        this.selectedError = null
+        this.email = this.employees.find(x => x.id === parseInt(this.selected)).email
+        var doc = this.createPDF()
+        const pdfDataUrl = doc.output('datauristring')
 
-      const email_to = "rynk@tlu.ee"
+        axios
+          .post('http://127.0.0.1:8000/api/send-pdf/', { pdfDataUrl, email_to: this.selectedEmail })
+          .then(response => {
+            console.log(response)
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      } else {
+        this.selectedError = "Vali meiliaadress"
+      }
 
-      axios
-        //.get('http://127.0.0.1:8000/api/send-pdf/')
-        .post('http://127.0.0.1:8000/api/send-pdf/', { pdfDataUrl, email_to })
-        .then(response => {
-          console.log(response)
-        })
-        .catch(error => {
-          console.log(error)
-        })
     }
   },
   watch: {
@@ -173,14 +177,22 @@ export default {
             </tbody>
           </table>
         </div>
+
+        <form class="email-form">
+          <label for="email-list">Saaja:</label>
+          <select name="email-list" id="email-list" v-model="selected">
+            <option disabled :value="null" v-if="!selected">Vali töötaja</option>
+            <option v-for="employee in employees" :value=employee.id>{{ employee.email }}</option>
+          </select>
+          <input type="submit" value="Saadan" @click.prevent="sendPDF()">
+          <p v-if="!selected && selectedError" class="error-message">{{ selectedError }}</p>
+        </form>
+
+        <button @click="downloadPDF()">Laadin alla</button>
+
         <button @click="showModal = false">Sulgen</button>
-        <button @click="downloadPDF()">Laadin tellimuslehe alla</button>
 
-        <div>
-          <EmailSelector :employees="employees" />
-        </div>
 
-        <button @click="sendPDF()">Saadan tellimuslehe</button>
       </div>
     </div>
   </Teleport>
@@ -228,8 +240,6 @@ td {
   border-bottom: 1px solid #ddd;
 }
 
-
-
 .modal-bg {
   position: fixed;
   top: 0;
@@ -259,5 +269,14 @@ td {
   background: none;
   border: none;
   cursor: pointer
+}
+
+.email-form {
+  margin-bottom: 20px;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
 }
 </style>
