@@ -8,13 +8,12 @@ from .serializers import (
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-# from django.http import HttpResponse
-# from django.core.mail import EmailMessage
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
+from email.utils import formataddr
 import os
 import base64
 from io import BytesIO
@@ -237,6 +236,7 @@ def send_pdf_email(request):
         smtp_server = "smtp.gmail.com"  # Google SMTP Server
 
         email_from = os.environ.get('EMAIL_HOST_USER')
+        sender_name = os.environ.get('EMAIL_HOST_NAME')
         pswd = os.environ.get('EMAIL_HOST_PASSWORD')
 
         email_to = request.data['email_to']
@@ -246,7 +246,7 @@ def send_pdf_email(request):
 
         # MIME object
         msg = MIMEMultipart()
-        msg['From'] = email_from
+        msg['From'] = formataddr((sender_name, email_from))
         msg['To'] = email_to
         msg['Subject'] = subject
 

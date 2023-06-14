@@ -4,7 +4,8 @@ import { onClickOutside } from '@vueuse/core'
 import { jsPDF } from 'jspdf'
 import 'jspdf-autotable'
 import axios from 'axios'
-import { useToast } from "vue-toastification";
+import { useToast } from "vue-toastification"
+import JsBarcode from 'jsbarcode'
 
 
 export default {
@@ -37,6 +38,7 @@ export default {
       selected: null,
       selectedError: null,
       selectedEmail: null,
+      barcode: null,
     }
   },
   setup() {
@@ -98,6 +100,19 @@ export default {
       doc.text(this.modalData.date.toString(), x + 40, y)
       y += ln
 
+      const barcodeValue = this.modalData.orderNumber; // The value to be encoded in the barcode
+      const barcodeCanvas = document.createElement('canvas'); // Create a canvas element for the barcode
+
+      JsBarcode(barcodeCanvas, barcodeValue, {
+        format: 'CODE128', // Specify the barcode format
+        displayValue: true, // Show the barcode value below the barcode
+        height: 50, // Set the height of the barcode
+        width: 1, // Set the width of the barcode bars
+      });
+
+      const barcodeDataUrl = barcodeCanvas.toDataURL(); // Get the data URL of the barcode image
+      doc.addImage(barcodeDataUrl, 'PNG', 150, 15, 50, 25);
+
       const headers = this.modalHeaders.map(header => header.title);
       const data = this.modalData.lines.map(line => this.modalHeaders.map(header => line[header.label]));
 
@@ -107,11 +122,10 @@ export default {
         startY: y
       });
       return doc
-
     },
     downloadPDF() {
       const doc = this.createPDF()
-      doc.save('a4.pdf');
+      doc.save('generated.pdf');
     },
     sendPDF() {
       if (this.selected != null) {
@@ -130,7 +144,6 @@ export default {
         axios
           .post('http://127.0.0.1:8000/api/send-pdf/', { pdfDataUrl, email_to: this.selectedEmail, orderFormData: updatedData })
           .then(response => {
-            console.log(response)
             if (response.status === 200) {
               this.toast.success("Saadetud!")
               this.modalData.status = "DELIVERED"
