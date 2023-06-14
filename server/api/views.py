@@ -268,13 +268,10 @@ def send_pdf_email(request):
 
         try:
             # Connect with the server
-            print("Connecting to server...")
             TIE_server = smtplib.SMTP(smtp_server, smtp_port)
             TIE_server.starttls()
             TIE_server.login(email_from, pswd)
-            print("Succesfully connected to server")
             TIE_server.sendmail(email_from, email_to, text)
-            print(f"Email sent to: {email_to}")
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -284,23 +281,18 @@ def send_pdf_email(request):
 
         # muudan tellimuse staatuse saadetuks
         updatedData = request.data['orderFormData']
-        print(updatedData)
 
         try:
             orderForm = OrderForm.objects.get(pk=updatedData['id'])
-            print(orderForm)
         except OrderForm.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = OrderFormSerializer(
             orderForm, data=updatedData)
-        print(serializer.initial_data)
         if serializer.is_valid():
-            print('jee2')
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # return HttpResponse('Email sent with PDF attachment.')
 
 # endregion

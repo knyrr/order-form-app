@@ -1,5 +1,5 @@
 <script>
-import { ref, toRef, watch, Teleport } from 'vue'
+import { toRef, Teleport } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import { jsPDF } from 'jspdf'
 import 'jspdf-autotable'
