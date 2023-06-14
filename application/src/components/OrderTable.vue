@@ -116,16 +116,25 @@ export default {
     sendPDF() {
       if (this.selected != null) {
         this.selectedError = null
-        this.email = this.employees.find(x => x.id === parseInt(this.selected)).email
+        this.selectedEmail = this.employees.find(x => x.id === parseInt(this.selected)).email
         var doc = this.createPDF()
         const pdfDataUrl = doc.output('datauristring')
+        const updatedData = {
+          id: this.modalData.id,
+          number: this.modalData.orderNumber,
+          client: this.modalData.clientId,
+          date: this.modalData.date,
+          status: "DELIVERED"
+        }
 
         axios
-          .post('http://127.0.0.1:8000/api/send-pdf/', { pdfDataUrl, email_to: this.selectedEmail })
+          .post('http://127.0.0.1:8000/api/send-pdf/', { pdfDataUrl, email_to: this.selectedEmail, orderFormData: updatedData })
           .then(response => {
             console.log(response)
             if (response.status === 200) {
               this.toast.success("Saadetud!")
+              this.modalData.status = "DELIVERED"
+
             } else {
               this.toast.error("Viga saatmisel!")
             }

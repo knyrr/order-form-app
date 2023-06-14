@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 # from . import config
 
-import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -30,13 +29,17 @@ django-insecure-lif1d@+edbgi=hk11b+713b)32vqtp%%8teh7nfv!$@$l#%_bf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
-CORS_ORIGIN_ALLOW_ALL = True
+# ALLOWED_HOSTS = ['*']
+# CORS_ORIGIN_ALLOW_ALL = True
 
 
-""" ALLOWED_HOSTS = ['http://localhost:5173']
+# ALLOWED_HOSTS = ['http://localhost:5173']
 CORS_ORIGIN_ALLOW_ALL = False
-CORS_ORIGIN_WHITELIST = ('http://localhost:5173',) """
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]
+# CORS_ORIGIN_WHITELIST = ('http://localhost:5173',)
 
 # Application definition
 
@@ -140,12 +143,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Email settings
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-""" EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER """

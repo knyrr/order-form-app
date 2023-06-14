@@ -8,7 +8,7 @@ from .serializers import (
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from django.http import HttpResponse
+# from django.http import HttpResponse
 # from django.core.mail import EmailMessage
 import smtplib
 from email.mime.text import MIMEText
@@ -226,8 +226,6 @@ def get_order_form_line_by_id(request, id, format=None):
 
 # region send pdf
 
-# Setup port number and server name
-
 
 @api_view(['GET', 'POST'])
 def send_pdf_email(request):
@@ -279,39 +277,30 @@ def send_pdf_email(request):
             print(f"Email sent to: {email_to}")
         except Exception as e:
             print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
         # Close the port
         TIE_server.quit()
 
-        return HttpResponse('Email sent with PDF attachment.')
+        # muudan tellimuse staatuse saadetuks
+        updatedData = request.data['orderFormData']
+        print(updatedData)
 
+        try:
+            orderForm = OrderForm.objects.get(pk=updatedData['id'])
+            print(orderForm)
+        except OrderForm.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-# @api_view(['GET', 'PUT', 'DELETE'])
+        serializer = OrderFormSerializer(
+            orderForm, data=updatedData)
+        print(serializer.initial_data)
+        if serializer.is_valid():
+            print('jee2')
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-# def send_pdf_email(request):
-#     # Generate the PDF
-#     # generate_pdf()
-
-#     # Create an email message object
-#     email = EmailMessage(
-#         'PDF Attachment',
-#         'Please find attached the PDF file.',
-#         'martin.rynk@gmail.com',  # Replace with sender's email address
-#         ['martin.runk@tlu.ee'],  # Replace with recipient's email address(es)
-#         # cc=['cc@example.com'],  # Replace with CC email address(es) if needed
-#     )
-
-#     # Attach the PDF file to the email
-#     # email.attach_file('path/to/your/pdf.pdf')
-
-#     # Send the email
-#     email.send()
-
-#     # send_mail('Test', 'This is a test', 'martin.rynk@gmail.com',
-#     #           ['rynk@tlu.ee'], fail_silently=False)
-
-#     return HttpResponse('Email sent with PDF attachment.')
-
+        # return HttpResponse('Email sent with PDF attachment.')
 
 # endregion
