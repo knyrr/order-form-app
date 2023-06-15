@@ -1,5 +1,5 @@
 <script setup>
-import { inject, onMounted, onUpdated, ref } from 'vue'
+import { inject, onMounted, ref } from 'vue'
 import OrderTable from './components/OrderTable.vue'
 
 const axios = inject('axios')
